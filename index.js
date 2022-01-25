@@ -13,11 +13,19 @@ async function run() {
         const config = new Config(core);
         console.log(`[data] config: ${JSON.stringify(config)}`);
 
-        const pull = new Pull(github.context.payload);
-        console.log(`[data] pull (payload): ${JSON.stringify(pull)}`);
-
         const token = core.getInput('GITHUB_TOKEN');
         const octokit = new github.getOctokit(token);
+
+        const { data: pr } = await octokit.pulls.get({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            labels: config.labels,
+        })
+
+        console.log(pr)
+
+        const pull = new Pull(pr);
+        console.log(`[data] pull (payload): ${JSON.stringify(pull)}`);
 
         console.log(`[info] get reviews`);
         const reviews = await octokit.pulls.listReviews({
