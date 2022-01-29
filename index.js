@@ -16,15 +16,18 @@ async function run() {
         const token = core.getInput('GITHUB_TOKEN');
         const octokit = new github.getOctokit(token);
 
-        const { data: pr } = await octokit.pulls.get({
+        const {data: prList} = await octokit.pulls.list({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            labels: config.labels,
         })
+        console.log(`[data] prList: ${JSON.stringify(prList)}`);
 
-        console.log(pr)
+        const { labels } = config
+        const prMergeable = prList.find(pr => pr.labels.find(label => labels.includes(label.name)))
 
-        const pull = new Pull(pr);
+        console.log(`[data] prMergeable: ${JSON.stringify(prMergeable)}`);
+
+        const pull = new Pull(prMergeable);
         console.log(`[data] pull (payload): ${JSON.stringify(pull)}`);
 
         console.log(`[info] get reviews`);
@@ -60,21 +63,21 @@ async function run() {
         } else {
             if (pull.canMerge(config)) {
 
-                // merge the pull request
                 console.log(`[info] merge start`);
-                await octokit.pulls.merge({
+                const prData = {
                     owner: pull.owner,
                     repo: pull.repo,
                     pull_number: pull.pull_number,
-                    merge_method: config.merge_method
-                });
+                    merge_method: config.merge_method,
+                }
+                
+                await octokit.pulls.merge(prData);
                 console.log(`[info] merge complete`);
 
                 if (config.delete_source_branch) {
                     if (pull.headRepoId !== pull.baseRepoId) {
                         console.log(`[warning] unable to delete branch from fork, branch retained`);
                     } else {
-                        // delete the branch
                         console.log(`[info] delete start`);
                         await octokit.git.deleteRef({
                             owner: pull.owner,
