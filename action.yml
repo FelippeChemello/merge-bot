@@ -11,7 +11,9 @@ inputs:
   labels:
     description: 'Labels required for integration. If some if included, integration will merge.'
     required: true
-    default: 'ready'
+  authors:
+    description: 'Authors that allows auto merge'
+    required: false
   blocking_labels:
     description: 'Labels that block the integration. If some if included, integration will not merge.'
     required: false
@@ -35,9 +37,7 @@ inputs:
   GITHUB_TOKEN:
     description: 'Authorization Token for accessing GitHub'
     required: true
-  authors:
-    description: 'Authors that allows auto merge'
-    required: false
+
 runs:
   using: 'node12'
   main: 'index.js'
