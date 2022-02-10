@@ -1,4 +1,4 @@
-name: 'PR Merge by label'
+name: 'Auto merge bot'
 description: 'Merge pull requests when certain conditions are met'
 branding:
   icon: 'git-merge'
@@ -9,11 +9,11 @@ inputs:
     required: false
     default: 'false'
   labels:
-    description: 'Labels required for integration'
+    description: 'Labels required for integration. If some if included, integration will merge.'
     required: true
     default: 'ready'
   blocking_labels:
-    description: 'Labels that block the integration'
+    description: 'Labels that block the integration. If some if included, integration will not merge.'
     required: false
     default: 'do not merge'
   reviewers:
@@ -35,6 +35,9 @@ inputs:
   GITHUB_TOKEN:
     description: 'Authorization Token for accessing GitHub'
     required: true
+  authors:
+    description: 'Authors that allows auto merge'
+    required: false
 runs:
   using: 'node12'
   main: 'index.js'
