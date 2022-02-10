@@ -20,7 +20,6 @@ async function run() {
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
         })
-        console.log(`[data] prList: ${JSON.stringify(prList)}`);
 
         const { labels, authors } = config
         if (!labels.length && !authors.length) {
@@ -44,8 +43,6 @@ async function run() {
         if (!prListFiltered.length) {
             throw new Error(`No PRs found for the given labels and authors.\n Authors: ${authors.join(', ')}\n Labels: ${labels.join(', ')}`);
         }
-
-        console.log(`[data] prListFiltered: ${JSON.stringify(prListFiltered)}`);
 
         for (const pr of prListFiltered) {
             console.log(`[info] processing PR #${pr.number} - ${pr.title}`);
